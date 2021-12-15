@@ -40,13 +40,33 @@ class Journey{
      */
     public function add_step(Step $step){
         if(is_null($this->stepHead)){
+            $step->setStepPrevious(null);
             $this->stepHead = $step;
             $this->stepEnd = $step;
         } else if($this->stepHead->isEqual($this->stepEnd)) {
+            $step->setStepPrevious($this->stepHead);
             $this->stepHead->setStepNext($step);
             $this->stepEnd = $step;
         } else {
             $this->stepEnd->setStepNext($step);
+        }
+    }
+
+    /**
+     * Remove a step in the journey
+     * 
+     * @param Step $step
+     */
+    public function remove_step(Step $step){
+        $stepCurrent = $this->getStepHead();
+
+        while(!is_null($stepCurrent) && !$stepCurrent->isEqual($step)){
+            $stepCurrent = $stepCurrent->getStepNext();
+        }
+
+        if(!is_null($stepCurrent)){
+            $stepCurrent->getStepPrevious()->setStepNext($step->getStepNext());
+            $stepCurrent->getStepNext()->setStepPrevious($step->getStepPrevious());
         }
     }
 
@@ -68,6 +88,7 @@ class Journey{
             if(!is_null($journeySorted->add_step($stepCurrent))){
                 $strDeparture = $stepCurrent->getStrTo();
                 $journeySorted->add_step($stepCurrent);
+                $journey->remove_step($stepCurrent);
             }
             
         }while(!is_null($stepCurrent));

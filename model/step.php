@@ -23,15 +23,25 @@ class Step{
     private $stepNext;
 
     /**
+     * @var Step
+     */
+    private $stepPrevious;
+
+    /**
      * Constructor of the Step class
      * 
      * @param string $strFrom
      * @param string $strTo
+     * @param Step $stepPrevious
+     * @param Step $stepNext
      * 
      */
-    public function __construct(string $strFrom = '', string $strTo = ''){
+    public function __construct(string $strFrom = '', string $strTo = '', Step $stepPrevious = null, Step $stepNext = null){
         $this->strFrom = $strFrom;
         $this->strTo = $strTo;
+        $this->stepPrevious = $stepPrevious;
+        $this->stepNext = $stepNext;
+        
     }
 
 
@@ -111,9 +121,33 @@ class Step{
      *
      * @return  self
      */ 
-    public function setStepNext(Step $stepNext)
+    public function setStepNext(?Step $stepNext)
     {
         $this->stepNext = $stepNext;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of stepPrevious
+     *
+     * @return  Step
+     */ 
+    public function getStepPrevious()
+    {
+        return $this->stepPrevious;
+    }
+
+    /**
+     * Set the value of stepPrevious
+     *
+     * @param  Step  $stepPrevious
+     *
+     * @return  self
+     */ 
+    public function setStepPrevious(?Step $stepPrevious)
+    {
+        $this->stepPrevious = $stepPrevious;
 
         return $this;
     }
