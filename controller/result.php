@@ -12,9 +12,7 @@ use Model\Journey;
 function get_output_journey(){
     $strJsonData = file_get_contents('../data/input.json');
     $journey = Journey::create_journey_from_input_data($strJsonData);
-    $journeySorted = Journey::sort_journey($journey, 'Fazenda São Francisco Citros, Brazil');
-
-    return $journeySorted.get_output_journey();
+    return $journey->get_array_ordonned_journey($journey, 'Fazenda São Francisco Citros, Brazil');
 }
 
 
@@ -26,11 +24,9 @@ function get_output_journey(){
  * @return string strOutput
  */
 function get_output_custom_journey(string $strCustomData){
-    $strJsonData = json_decode($strCustomData);
-    $journey = Journey::create_journey_from_input_data($strJsonData);
-    $journeySorted = Journey::sort_journey($journey, 'Fazenda São Francisco Citros, Brazil');
+    $journey = Journey::create_journey_from_input_data($strCustomData);
 
-    return $journeySorted.get_output_journey();
+    return $journey->get_array_ordonned_journey($journey, 'Fazenda São Francisco Citros, Brazil');
 }
 
 
