@@ -101,7 +101,7 @@ class Step{
      * @return boolean True if equal, false otherwise
      */
     public function isEqual (Step $step) : bool {
-        return $this->strFrom = $step->getStrFrom() && $this->strTo = $this->getStrTo();
+        return $this->strFrom == $step->getStrFrom() && $this->strTo == $this->getStrTo();
     }
 
     /**

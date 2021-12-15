@@ -14,9 +14,9 @@
     {
     "from": "Porto International Airport, Portugal",
     "to": "Adolfo Suárez Madrid–Barajas Airport, Spain"
-},
-{
-"from": "São Paulo–Guarulhos International Airport, Brazil",
-"to": "Porto International Airport, Portugal"
-}
+    },
+    {
+    "from": "São Paulo–Guarulhos International Airport, Brazil",
+    "to": "Porto International Airport, Portugal"
+    }
 ]

@@ -2,6 +2,10 @@
 
 namespace Model;
 
+require '../Model/Step.php';
+
+use Model\Step;
+
 /**
  *  Class representing a journey
  */
@@ -39,17 +43,25 @@ class Journey{
      * @param Step $step
      */
     public function add_step(Step $step){
+
         if(is_null($this->stepHead)){
-            $step->setStepPrevious(null);
             $this->stepHead = $step;
             $this->stepEnd = $step;
+            $step->setStepPrevious(null);
+            
         } else if($this->stepHead->isEqual($this->stepEnd)) {
-            $step->setStepPrevious($this->stepHead);
             $this->stepHead->setStepNext($step);
             $this->stepEnd = $step;
+            $step->setStepPrevious($this->stepHead);
+            
         } else {
-            $this->stepEnd->setStepNext($step);
+            $stepTmpEnd = $this->getStepEnd();
+            $this->setStepEnd($step);
+            $this->getStepEnd()->setStepNext(null);
+            $this->getStepEnd()->setStepPrevious($stepTmpEnd);
+            $this->getStepEnd()->getStepPrevious()->setStepNext($this->getStepEnd());
         }
+
     }
 
     /**
@@ -65,9 +77,45 @@ class Journey{
         }
 
         if(!is_null($stepCurrent)){
-            $stepCurrent->getStepPrevious()->setStepNext($step->getStepNext());
-            $stepCurrent->getStepNext()->setStepPrevious($step->getStepPrevious());
+            if(!is_null($stepCurrent->getStepPrevious())){
+                $stepCurrent->getStepPrevious()->setStepNext($step->getStepNext());
+            } elseif (!is_null($stepCurrent->getStepNext())) {
+                $this->setStepHead($stepCurrent->getStepNext());
+            }
+
+            if(!is_null($stepCurrent->getStepNext())){
+                $stepCurrent->getStepNext()->setStepPrevious($step->getStepPrevious());
+            } elseif (!is_null($stepCurrent->getStepPrevious())) {
+                $this->setStepEnd($stepCurrent->getStepPrevious());
+            }
+            
+            
         }
+    }
+
+    /**
+     * Create a new journey from json input data
+     * 
+     * @param string string $strJsonData Json Data
+     * 
+     * @return Journey $journey
+     */
+    public static function create_journey_from_input_data(string $strJsonData) : Journey{
+        $journey = new Journey();
+        $arrJsonInput = json_decode($strJsonData);
+
+        if(json_last_error() !== JSON_ERROR_NONE){
+            return $journey;
+        }
+        
+        foreach($arrJsonInput as $rowJsonStep){
+            $stepNew = new Step($rowJsonStep->from, $rowJsonStep->to);
+            $journey->add_step($stepNew);
+        }
+
+        var_dump($journey->get_array_output_journey());
+        die;
+        return $journey;
     }
 
 
@@ -85,15 +133,34 @@ class Journey{
 
         do{
             $stepCurrent = $journey->get_step_from_departure($strDeparture);
-            if(!is_null($journeySorted->add_step($stepCurrent))){
+            if(!is_null($stepCurrent)){
                 $strDeparture = $stepCurrent->getStrTo();
                 $journeySorted->add_step($stepCurrent);
+                
                 $journey->remove_step($stepCurrent);
             }
             
         }while(!is_null($stepCurrent));
+
         
         return $journeySorted;
+    }
+
+    /**
+     * Return the different steps of the journey as array
+     * 
+     * @return array $arrOutput
+     */
+    public function get_array_output_journey() : array{
+        $arrOutput = array();
+        
+        $stepCurrent = $this->getStepHead();
+        while(!is_null($stepCurrent)){
+            $arrOutput[] = $stepCurrent->getStrFrom() ;
+            $stepCurrent = $stepCurrent->getStepNext();
+        }
+
+        return $arrOutput;
     }
 
     /**
@@ -103,8 +170,9 @@ class Journey{
      * 
      * @return Step $stepSearched
      */
-    public function get_step_from_departure(string $strDeparture) : Step{
+    public function get_step_from_departure(string $strDeparture){
         $stepCurrent = $this->getStepHead();
+        
 
         while(!is_null($stepCurrent) && $stepCurrent->getStrFrom() != $strDeparture){
             $stepCurrent = $stepCurrent->getStepNext();
