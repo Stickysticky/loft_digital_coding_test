@@ -44,54 +44,28 @@ class Journey{
      */
     public function add_step(Step $step){
 
+        $step->setStepPrevious(null);
+        $step->setStepNext(null);
+
         if(is_null($this->stepHead)){
             $this->stepHead = $step;
             $this->stepEnd = $step;
-            $step->setStepPrevious(null);
             
         } else if($this->stepHead->isEqual($this->stepEnd)) {
-            $this->stepHead->setStepNext($step);
             $this->stepEnd = $step;
-            $step->setStepPrevious($this->stepHead);
+            $this->stepHead->setStepNext($this->stepEnd);
+            
             
         } else {
             $stepTmpEnd = $this->getStepEnd();
             $this->setStepEnd($step);
             $this->getStepEnd()->setStepNext(null);
-            $this->getStepEnd()->setStepPrevious($stepTmpEnd);
-            $this->getStepEnd()->getStepPrevious()->setStepNext($this->getStepEnd());
+            $this->stepEnd->setStepPrevious($stepTmpEnd);
+            $this->stepEnd->getStepPrevious()->setStepNext($this->getStepEnd());
         }
 
     }
 
-    /**
-     * Remove a step in the journey
-     * 
-     * @param Step $step
-     */
-    public function remove_step(Step $step){
-        $stepCurrent = $this->getStepHead();
-
-        while(!is_null($stepCurrent) && !$stepCurrent->isEqual($step)){
-            $stepCurrent = $stepCurrent->getStepNext();
-        }
-
-        if(!is_null($stepCurrent)){
-            if(!is_null($stepCurrent->getStepPrevious())){
-                $stepCurrent->getStepPrevious()->setStepNext($step->getStepNext());
-            } elseif (!is_null($stepCurrent->getStepNext())) {
-                $this->setStepHead($stepCurrent->getStepNext());
-            }
-
-            if(!is_null($stepCurrent->getStepNext())){
-                $stepCurrent->getStepNext()->setStepPrevious($step->getStepPrevious());
-            } elseif (!is_null($stepCurrent->getStepPrevious())) {
-                $this->setStepEnd($stepCurrent->getStepPrevious());
-            }
-            
-            
-        }
-    }
 
     /**
      * Create a new journey from json input data
@@ -113,37 +87,35 @@ class Journey{
             $journey->add_step($stepNew);
         }
 
-        var_dump($journey->get_array_output_journey());
-        die;
+
         return $journey;
     }
 
 
     /**
-     * Create a new sorted journey
+     * Return an array with the ordonned steps
      * 
      * @param Journey $journey
      * @param string $strDeparture Departure Location
      * 
-     * @return Journey $journeySorted
+     * @return array $arrOrdonnedStep
      */
-    public static function sort_journey(Journey $journey, string $strDeparture) : Journey{
-        $journeySorted = new Journey();
+    public function get_array_ordonned_journey(Journey $journey, string $strDeparture) : array{
         $stepCurrent = null;
+
+        $arrOrdonnedStep = array($strDeparture);
 
         do{
             $stepCurrent = $journey->get_step_from_departure($strDeparture);
             if(!is_null($stepCurrent)){
                 $strDeparture = $stepCurrent->getStrTo();
-                $journeySorted->add_step($stepCurrent);
-                
-                $journey->remove_step($stepCurrent);
+                $arrOrdonnedStep[] = $strDeparture;
             }
             
         }while(!is_null($stepCurrent));
 
-        
-        return $journeySorted;
+
+        return $arrOrdonnedStep;
     }
 
     /**
