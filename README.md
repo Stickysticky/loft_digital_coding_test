@@ -16,7 +16,7 @@ By using the link "See the result with default data", you will see the result wi
 
 ![image](https://user-images.githubusercontent.com/23642565/146261722-fe73e4da-0105-4b5a-af1c-8ae686136055.png)
 
-You can also test with your own json data with the link "Test with new data". For the result, we consider that all travel start with "Fazenda São Francisco Citros, Brazil"
+You can also test it with your own json data with the link "Test with new data". For the result, we consider that all travel start with "Fazenda São Francisco Citros, Brazil"
 
 ![image](https://user-images.githubusercontent.com/23642565/146261630-415d4610-10a3-449d-8936-451f6a391bc5.png)
 
